@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Available Colors
+black='\033[0;30m'
+red='\033[0;31m'
+green='\033[0;32m'
+brown='\033[0;33m'
+blue='\033[0;34m'
+purple='\033[0;35m'
+cyan='\033[0;36m'
+gray='\033[0;37m'
+
+bold='\e[1m'
+none='\033[0m'
+
 #----------------------------------------------------------
 #                        Settings
 #----------------------------------------------------------
@@ -18,17 +31,17 @@ ETH=0.026984
 IOTA=1367.50
 TRX=1092.5
 
+# Provide colors of all cryptocurrencies that you have stated in cryptoCurrencies
+BTC_color=$brown
+ETH_color=$blue
+IOTA_color=$brown
+TRX_color=$blue
+
 #----------------------------------------------------------
 #                    END of Settings
 #----------------------------------------------------------
 
-# Colors
-orange='\033[0;33m'
-green='\033[0;32m'
-red='\033[0;31m'
-none='\033[0m'
-
-echo -e "${orange}"
+echo -e "${brown}"
 echo "  _____                  _        ____        _ "
 echo " / ____|                | |      |  _ \      | |"
 echo "| |     _ __ _   _ _ __ | |_ ___ | |_) | __ _| |"
@@ -48,8 +61,8 @@ fi
 
 total=0
 
-printf "%10s | %10s | %10s | %10s |" "Crypto" "Price" "Holdings" "Portfolio"
-echo -e "\n--------------------------------------------------|"
+printf "%10s | %10s | %15s | %10s |" "Crypto" "Price" "Holdings" "Portfolio"
+echo -e "\n-------------------------------------------------------|"
 for i in ${!cryptoCurrencies[@]};
 do
   CName=${cryptoCurrencies[$i]}
@@ -67,9 +80,10 @@ do
   CPortfolio=$(echo "scale=2; $CPrice * ${!CName}" | bc)
   CPortfolio=$(printf '%.2f' $CPortfolio)
   total=$(echo "scale=2; $total + $CPortfolio" | bc)
-  printf "%10s | %10s | %10s | %10s |" "$CName" "\$$CPrice" "${!CName}" "\$${CPortfolio}"
+  color=$(echo "${CName}_color")
+  printf "${!color}${bold}%10s$none | %10s | %15s | %10s |" "$CName" "\$$CPrice" "${!CName} $CName" "\$${CPortfolio}"
   echo ""
 done
-echo -e "--------------------------------------------------|"
-printf "%10s | %10s | %10s | %10s |" "Total" "" "" "\$${total}"
+echo -e "$none-------------------------------------------------------|"
+printf "${green}%10s $none| %10s   %15s  ${green}${bold} %10s $none|" "Total" "" "" "\$${total}"
 echo -e "\n"
