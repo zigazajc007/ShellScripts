@@ -4,7 +4,7 @@
 #                        Settings
 #----------------------------------------------------------
 
-# What exchange do you want to use to get prices from?
+# What exchange do you want prices to be fetched from?
 # 0 = Coinbase (Default)
 # 1 = Binance
 exchange=0
@@ -41,7 +41,13 @@ echo "              __/ | |"
 echo "             |___/|_|"
 echo -e "${none}"
 
-prices=$(curl -s https://api.coinbase.com/v2/exchange-rates?currency=${currency})
+if [ $exchange == 1 ]
+then
+  prices=$(curl -s https://api.binance.com/api/v3/ticker/price)
+else
+  prices=$(curl -s https://api.coinbase.com/v2/exchange-rates?currency=${currency})
+fi
+
 total=0
 
 printf "%10s | %10s | %10s | %10s |" "Crypto" "Price" "Holdings" "Portfolio"
@@ -49,9 +55,17 @@ echo -e "\n--------------------------------------------------|"
 for i in ${!cryptoCurrencies[@]};
 do
   CName=${cryptoCurrencies[$i]}
-  CPrice=$(echo $prices | jq ".data.rates.$CName" | bc)
-  CPrice=$(printf '%.18f' $CPrice)
-  CPrice=$(echo "scale=2; 1/$CPrice" | bc)
+
+  if [ $exchange == 1 ]
+  then
+    CPrice=$(echo $prices | jq '.[] | select(.symbol=="'${CName}USDT'") | .price' | bc)
+    CPrice=$(printf '%.2f' $CPrice)
+  else
+    CPrice=$(echo $prices | jq ".data.rates.$CName" | bc)
+    CPrice=$(printf '%.18f' $CPrice)
+    CPrice=$(echo "scale=2; 1/$CPrice" | bc)
+  fi
+
   CPortfolio=$(echo "scale=2; $CPrice * ${!CName}" | bc)
   total=$(echo "scale=2; $total + $CPortfolio" | bc)
   printf "%10s | %10s | %10s | %10s |" "$CName" "$CPrice" "${!CName}" "${CPortfolio}"
