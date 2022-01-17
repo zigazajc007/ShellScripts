@@ -61,8 +61,8 @@ fi
 
 total=0
 
-printf "%10s | %10s | %15s | %10s |" "Crypto" "Price" "Holdings" "Portfolio"
-echo -e "\n-------------------------------------------------------|"
+printf "%10s | %15s | %15s | %15s |" "Crypto" "Price" "Holdings" "Portfolio"
+echo -e "\n-----------------------------------------------------------------|"
 for i in ${!cryptoCurrencies[@]};
 do
   CName=${cryptoCurrencies[$i]}
@@ -80,10 +80,13 @@ do
   CPortfolio=$(echo "scale=2; $CPrice * ${!CName}" | bc)
   CPortfolio=$(printf '%.2f' $CPortfolio)
   total=$(echo "scale=2; $total + $CPortfolio" | bc)
+  CPrice=$(printf "%'.2f" $CPrice)
+  CPortfolio=$(printf "%'.2f" $CPortfolio)
   color=$(echo "${CName}_color")
-  printf "${!color}${bold}%10s$none | %10s | %15s | %10s |" "$CName" "\$$CPrice" "${!CName} $CName" "\$${CPortfolio}"
+  printf "${!color}${bold}%10s$none | %15s | %15s | %15s |" "$CName" "\$$CPrice" "${!CName} $CName" "\$${CPortfolio}"
   echo ""
 done
-echo -e "$none-------------------------------------------------------|"
-printf "${green}%10s $none| %10s   %15s  ${green}${bold} %10s $none|" "Total" "" "" "\$${total}"
+echo -e "$none-----------------------------------------------------------------|"
+total=$(printf "%'.2f" $total)
+printf "${green}%10s $none| %15s   %15s  ${green}${bold} %15s $none|" "Total" "" "" "\$${total}"
 echo -e "\n"
