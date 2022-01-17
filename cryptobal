@@ -5,20 +5,18 @@
 #----------------------------------------------------------
 
 # What exchange do you want prices to be fetched from?
-# 0 = Coinbase (Default)
-# 1 = Binance
-exchange=0
-
-# What fiat currency do you want to use?
-# USD
-# EUR
-currency=USD
+# 0 = Coinbase
+# 1 = Binance (Default)
+exchange=1
 
 # Provide all cryptocurrencies that you hodl
-cryptoCurrencies=("BTC" "ETH")
+cryptoCurrencies=("BTC" "ETH" "IOTA" "TRX")
 
-BTC=0.01
-ETH=2
+# Provide balance of all cryptocurrencies that you have stated in cryptoCurrencies
+BTC=0.0126673
+ETH=0.026984
+IOTA=1367.50
+TRX=1092.5
 
 #----------------------------------------------------------
 #                    END of Settings
@@ -45,7 +43,7 @@ if [ $exchange == 1 ]
 then
   prices=$(curl -s https://api.binance.com/api/v3/ticker/price)
 else
-  prices=$(curl -s https://api.coinbase.com/v2/exchange-rates?currency=${currency})
+  prices=$(curl -s https://api.coinbase.com/v2/exchange-rates?currency=USD)
 fi
 
 total=0
@@ -67,10 +65,11 @@ do
   fi
 
   CPortfolio=$(echo "scale=2; $CPrice * ${!CName}" | bc)
+  CPortfolio=$(printf '%.2f' $CPortfolio)
   total=$(echo "scale=2; $total + $CPortfolio" | bc)
-  printf "%10s | %10s | %10s | %10s |" "$CName" "$CPrice" "${!CName}" "${CPortfolio}"
+  printf "%10s | %10s | %10s | %10s |" "$CName" "\$$CPrice" "${!CName}" "\$${CPortfolio}"
   echo ""
 done
 echo -e "--------------------------------------------------|"
-printf "%10s | %10s | %10s | %10s |" "Total" "" "" "$total"
+printf "%10s | %10s | %10s | %10s |" "Total" "" "" "\$${total}"
 echo -e "\n"
