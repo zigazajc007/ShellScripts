@@ -1,0 +1,62 @@
+#!/bin/bash
+
+#----------------------------------------------------------
+#                        Settings
+#----------------------------------------------------------
+
+# What exchange do you want to use to get prices from?
+# 0 = Coinbase (Default)
+# 1 = Binance
+exchange=0
+
+# What fiat currency do you want to use?
+# USD
+# EUR
+currency=USD
+
+# Provide all cryptocurrencies that you hodl
+cryptoCurrencies=("BTC" "ETH")
+
+BTC=0.01
+ETH=2
+
+#----------------------------------------------------------
+#                    END of Settings
+#----------------------------------------------------------
+
+# Colors
+orange='\033[0;33m'
+green='\033[0;32m'
+red='\033[0;31m'
+none='\033[0m'
+
+echo -e "${orange}"
+echo "  _____                  _        ____        _ "
+echo " / ____|                | |      |  _ \      | |"
+echo "| |     _ __ _   _ _ __ | |_ ___ | |_) | __ _| |"
+echo "| |    | '__| | | | '_ \| __/ _ \|  _ < / _\` | |"
+echo "| |____| |  | |_| | |_) | || (_) | |_) | (_| | |"
+echo " \_____|_|   \__, | .__/ \__\___/|____/ \__,_|_|"
+echo "              __/ | |"
+echo "             |___/|_|"
+echo -e "${none}"
+
+prices=$(curl -s https://api.coinbase.com/v2/exchange-rates?currency=${currency})
+total=0
+
+printf "%10s | %10s | %10s | %10s |" "Crypto" "Price" "Holdings" "Portfolio"
+echo -e "\n--------------------------------------------------|"
+for i in ${!cryptoCurrencies[@]};
+do
+  CName=${cryptoCurrencies[$i]}
+  CPrice=$(echo $prices | jq ".data.rates.$CName" | bc)
+  CPrice=$(printf '%.18f' $CPrice)
+  CPrice=$(echo "scale=2; 1/$CPrice" | bc)
+  CPortfolio=$(echo "scale=2; $CPrice * ${!CName}" | bc)
+  total=$(echo "scale=2; $total + $CPortfolio" | bc)
+  printf "%10s | %10s | %10s | %10s |" "$CName" "$CPrice" "${!CName}" "${CPortfolio}"
+  echo ""
+done
+echo -e "--------------------------------------------------|"
+printf "%10s | %10s | %10s | %10s |" "Total" "" "" "$total"
+echo -e "\n"
