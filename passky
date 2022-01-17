@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Colors
+orange='\033[0;33m'
+green='\033[0;32m'
+red='\033[0;31m'
+none='\033[0m'
+
+echo -e "${orange}"
+echo "  _____              _          "
+echo " |  __ \            | |         "
+echo " | |__) |_ _ ___ ___| | ___   _ "
+echo " |  ___/ _\` / __/ __| |/ / | | |"
+echo " | |  | (_| \__ \__ \   <| |_| |"
+echo " |_|   \__,_|___/___/_|\_\\__,  |"
+echo "                           __/ |"
+echo "                          |___/ "
+echo -e "${none}"
+
+passkyServers=("eu1.passky.org" "eu2.passky.org" "dev1.passky.org" "dev2.passky.org")
+
+printf "%25s | %10s | %10s | %10s |" "Server" "Accounts" "Version" "Status"
+echo -e "\n-----------------------------------------------------------------|"
+for i in ${!passkyServers[@]};
+do
+  PSJ=$(curl -s https://${passkyServers[$i]}?action=getInfo)
+  PSName=${passkyServers[$i]}
+  PSError=$(echo $PSJ | jq '.error')
+  PSAccounts=$(echo $PSJ | jq '.users')
+  PSMaxAccounts=$(echo $PSJ | jq '.maxUsers')
+  PSVersion=$(echo $PSJ | jq '.version' | tr -d \")
+  if [ -z "$PSError" ]
+  then
+    printf "%25s | %10s | %10s | ${red}%10s${none} |" "$PSName" "?" "?" "Offline"
+  else
+    printf "%25s | %10s | %10s | ${green}%10s${none} |" "$PSName" "$PSAccounts/$PSMaxAccounts" "$PSVersion" "Online"
+  fi
+  echo ""
+done
+echo ""
