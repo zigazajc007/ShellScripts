@@ -4,7 +4,7 @@
 #                        Settings
 #----------------------------------------------------------
 
-# What exchange do you want prices to be fetched from?
+# From what exchange do you want prices to be fetched?
 # 0 = Coinbase
 # 1 = Binance (Default)
 exchange=1
