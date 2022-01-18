@@ -28,7 +28,7 @@ cryptoCurrencies=("BTC" "ETH" "IOTA" "TRX")
 # Provide balance of all cryptocurrencies that you have stated in cryptoCurrencies
 BTC=0.0126673
 ETH=0.026984
-IOTA=1367.50
+IOTA=2191.50
 TRX=1092.5
 
 # Provide colors of all cryptocurrencies that you have stated in cryptoCurrencies
