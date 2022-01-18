@@ -23,19 +23,21 @@ none='\033[0m'
 exchange=1
 
 # Provide all cryptocurrencies that you hodl
-cryptoCurrencies=("BTC" "ETH" "IOTA" "TRX")
+cryptoCurrencies=("BTC" "ETH" "XMR" "IOTA" "TRX")
 
 # Provide balance of all cryptocurrencies that you have stated in cryptoCurrencies
 BTC=0.0126673
 ETH=0.026984
+XMR=0.758581
 IOTA=2191.50
 TRX=1092.5
 
 # Provide colors of all cryptocurrencies that you have stated in cryptoCurrencies
 BTC_color=$brown
 ETH_color=$blue
-IOTA_color=$brown
-TRX_color=$blue
+XMR_color=$brown
+IOTA_color=$blue
+TRX_color=$brown
 
 #----------------------------------------------------------
 #                    END of Settings
