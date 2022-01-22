@@ -19,24 +19,25 @@ none='\033[0m'
 
 # From what exchange do you want prices to be fetched?
 # 0 = Coinbase
-# 1 = Binance (Default)
-exchange=1
+# 1 = Binance
+# or provide exchange name
+exchange=binance
 
 # Provide all cryptocurrencies that you hodl
-cryptoCurrencies=("BTC" "ETH" "XMR" "IOTA" "TRX")
+cryptoCurrencies=("BTC" "ETH" "XMR" "MIOTA" "TRX")
 
 # Provide balance of all cryptocurrencies that you have stated in cryptoCurrencies
 BTC=0.0126673
 ETH=0.026984
 XMR=0.758581
-IOTA=2191.50
+MIOTA=2191.50
 TRX=1092.5
 
 # Provide colors of all cryptocurrencies that you have stated in cryptoCurrencies
 BTC_color=$brown
 ETH_color=$blue
 XMR_color=$brown
-IOTA_color=$blue
+MIOTA_color=$blue
 TRX_color=$brown
 
 #----------------------------------------------------------
@@ -54,11 +55,12 @@ echo "              __/ | |"
 echo "             |___/|_|"
 echo -e "${none}"
 
-if [ $exchange == 1 ]
+if [ $exchange == 0 ]
+then
+  prices=$(curl -s https://api.coinbase.com/v2/exchange-rates?currency=USD)
+elif [ $exchange == 1 ]
 then
   prices=$(curl -s https://api.binance.com/api/v3/ticker/price)
-else
-  prices=$(curl -s https://api.coinbase.com/v2/exchange-rates?currency=USD)
 fi
 
 total=0
@@ -69,14 +71,18 @@ for i in ${!cryptoCurrencies[@]};
 do
   CName=${cryptoCurrencies[$i]}
 
-  if [ $exchange == 1 ]
+  if [ $exchange == 0 ]
+  then
+    CPrice=$(echo $prices | jq ".data.rates.$CName" | bc)
+    CPrice=$(printf '%.18f' $CPrice)
+    CPrice=$(echo "scale=2; 1/$CPrice" | bc)
+  elif [ $exchange == 1 ]
   then
     CPrice=$(echo $prices | jq '.[] | select(.symbol=="'${CName}USDT'") | .price' | bc)
     CPrice=$(printf '%.2f' $CPrice)
   else
-    CPrice=$(echo $prices | jq ".data.rates.$CName" | bc)
-    CPrice=$(printf '%.18f' $CPrice)
-    CPrice=$(echo "scale=2; 1/$CPrice" | bc)
+    CPrice=$(curl -s "https://min-api.cryptocompare.com/data/price?fsym=${CName}&tsyms=USDT&e=${exchange}" | jq ".USDT" | bc)
+    CPrice=$(printf '%.2f' $CPrice)
   fi
 
   CPortfolio=$(echo "scale=2; $CPrice * ${!CName}" | bc)
