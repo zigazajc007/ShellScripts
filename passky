@@ -17,7 +17,7 @@ echo "                           __/ |"
 echo "                          |___/ "
 echo -e "${none}"
 
-passkyServers=("eu1.passky.org" "eu2.passky.org" "dev1.passky.org" "dev2.passky.org")
+passkyServers=("eu1.passky.org" "eu2.passky.org" "us1.passky.org" "us2.passky.org" "dev1.passky.org")
 
 printf "%25s | %10s | %10s | %10s |" "Server" "Accounts" "Version" "Status"
 echo -e "\n-----------------------------------------------------------------|"
