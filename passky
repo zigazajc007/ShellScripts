@@ -17,10 +17,10 @@ echo "                           __/ |"
 echo "                          |___/ "
 echo -e "${none}"
 
-passkyServers=("eu1.passky.org" "eu2.passky.org" "us1.passky.org" "us2.passky.org" "dev1.passky.org")
+passkyServers=("eu1.passky.org" "eu2.passky.org" "us1.passky.org" "us2.passky.org")
 
-printf "%25s | %10s | %10s | %10s |" "Server" "Accounts" "Version" "Status"
-echo -e "\n-----------------------------------------------------------------|"
+printf "%25s | %10s | %15s | %10s | %10s |" "Server" "Accounts" "Passwords" "Version" "Status"
+echo -e "\n-----------------------------------------------------------------------------------|"
 for i in ${!passkyServers[@]};
 do
   PSJ=$(curl -s https://${passkyServers[$i]}?action=getInfo)
@@ -28,12 +28,15 @@ do
   PSError=$(echo $PSJ | jq '.error')
   PSAccounts=$(echo $PSJ | jq '.users')
   PSMaxAccounts=$(echo $PSJ | jq '.maxUsers')
+  PSPasswords=$(echo $PSJ | jq '.passwords')
+  PSMaxPasswords=$(echo $PSJ | jq '.maxPasswords')
+  PSMP=$((PSMaxAccounts*PSMaxPasswords))
   PSVersion=$(echo $PSJ | jq '.version' | tr -d \")
   if [ -z "$PSError" ]
   then
-    printf "%25s | %10s | %10s | ${red}%10s${none} |" "$PSName" "?" "?" "Offline"
+    printf "%25s | %10s | %15s | %10s | ${red}%10s${none} |" "$PSName" "?" "?" "?" "Offline"
   else
-    printf "%25s | %10s | %10s | ${green}%10s${none} |" "$PSName" "$PSAccounts/$PSMaxAccounts" "$PSVersion" "Online"
+    printf "%25s | %10s | %15s | %10s | ${green}%10s${none} |" "$PSName" "$PSAccounts/$PSMaxAccounts" "$PSPasswords/$PSMP" "$PSVersion" "Online"
   fi
   echo ""
 done
